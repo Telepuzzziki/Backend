@@ -1,9 +1,11 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
+from slugify import slugify
 import csv
 import io
 from typing import List, Dict
 
 router = APIRouter()
+endpoint_path = slugify('csv_upload')
 
 
 class CsvProcessor:
@@ -26,7 +28,7 @@ class CsvProcessor:
 csv_processor = CsvProcessor()
 
 
-@router.post("/csv_upload", summary="Endpoint to upload and process CSV files")
+@router.post(f"/{endpoint_path}", summary="Endpoint to upload and process CSV files")
 async def csv_upload(file: UploadFile = File(...)):
     """
     Upload a CSV file and process its contents.

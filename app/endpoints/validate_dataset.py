@@ -1,11 +1,13 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Response
+from slugify import slugify
 import io
 import pandas as pd
 from app.core.validator import CsvValidator, is_invalid_date, is_invalid_ipv4, is_invalid_positive_numeric, remove_microseconds_regex_inplace
 
 router = APIRouter()
+endpoint_path = slugify('validate_dataset')
 
-@router.post("/validate_dataset", summary="Endpoint to validate any dataset (CSV) using default rules")
+@router.post(f"/{endpoint_path}", summary="Endpoint to validate any dataset (CSV) using default rules")
 async def validate_dataset(file: UploadFile = File(...)):
     """
     Accepts a CSV file, applies default validation rules, and returns the modified dataset as CSV.

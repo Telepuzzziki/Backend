@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Response
 import io
 import pandas as pd
 from app.core.validator import CsvValidator, is_invalid_date, is_invalid_ipv4, is_invalid_positive_numeric, remove_microseconds_regex_inplace
@@ -8,7 +8,7 @@ router = APIRouter()
 @router.post("/validate_dataset", summary="Endpoint to validate any dataset (CSV) using default rules")
 async def validate_dataset(file: UploadFile = File(...)):
     """
-    Accepts a CSV file, applies default validation rules, and returns the modified dataset as JSON.
+    Accepts a CSV file, applies default validation rules, and returns the modified dataset as CSV.
     Default rules applied:
       - If 'created_on' column exists, validate using is_invalid_date
       - If 'updated_on' column exists, validate using is_invalid_date
@@ -38,4 +38,5 @@ async def validate_dataset(file: UploadFile = File(...)):
     validator = CsvValidator(df)
     modified_df = validator.validate(rules)
     
-    return {"success": True, "data": modified_df.to_json(orient='records')} 
+    csv_data = modified_df.to_csv(index=False)
+    return Response(content=csv_data, media_type="text/csv") 
